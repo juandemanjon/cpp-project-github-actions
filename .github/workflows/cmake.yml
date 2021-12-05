@@ -6,45 +6,41 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+# env:
+#   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+#   BUILD_TYPE: Release
 
 jobs:
-  build_debug:
-    runs-on: windows-latest
-    env:
-      VCPKG_FEATURE_FLAGS: manifests,binarycaching
-    steps:
-      - uses: actions/checkout@v2
-      - uses: lukka/run-vcpkg@v10
-        with:
-          vcpkgGitCommitId: 63e935d967a3410e26bf4a708efa39d8384d2bbb
-          cleanAfterBuild: true
-      - uses: lukka/run-cmake@v10
-        with:
-          useVcpkgToolchainFile: true
-          cmakeBuildType: "Debug"
-          buildDirectory: "${{ github.workspace }}/build"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--config Debug"
+  windows:
+    strategy:
+      matrix:
+        buildtype: [Debug, Release]
+        preset: [msvc2019]
 
-  build_release:
-    runs-on: macos-latest
+    name: Build-and-Test-Windows-${{matrix.buildtype}}
+    runs-on: windows-latest
+
     env:
-      VCPKG_FEATURE_FLAGS: manifests,binarycaching
+      CMAKE_BUILD_TYPE: ${{matrix.buildtype}}
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: lukka/run-vcpkg@v10
-        with:
-          vcpkgGitCommitId: 63e935d967a3410e26bf4a708efa39d8384d2bbb
-      - uses: lukka/run-cmake@v10
-        with:
-          useVcpkgToolchainFile: true
-          cmakeBuildType: "Release"
-          buildDirectory: "${{ github.workspace }}/build"
-          buildWithCMake: true
-          buildWithCMakeArgs: "--config Release"
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup vcpkg
+      uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: '63e935d967a3410e26bf4a708efa39d8384d2bbb'
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build --preset ${{matrix.preset}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{matrix.buildtype}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -C ${{matrix.buildtype}}
 
   # build:
   #   runs-on: windows-latest
