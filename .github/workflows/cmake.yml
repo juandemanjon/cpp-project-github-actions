@@ -17,7 +17,6 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
-      - run: brew install swift-protobuf
       - uses: lukka/run-vcpkg@v10
         with:
           vcpkgGitCommitId: 63e935d967a3410e26bf4a708efa39d8384d2bbb
@@ -36,7 +35,6 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,binarycaching
     steps:
       - uses: actions/checkout@v2
-      - run: brew install swift-protobuf
       - uses: lukka/run-vcpkg@v10
         with:
           vcpkgGitCommitId: 63e935d967a3410e26bf4a708efa39d8384d2bbb
@@ -44,7 +42,7 @@ jobs:
         with:
           useVcpkgToolchainFile: true
           cmakeBuildType: "Release"
-          buildDirectory: "${{ github.workspace }}/build-release"
+          buildDirectory: "${{ github.workspace }}/build"
           buildWithCMake: true
           buildWithCMakeArgs: "--config Release"
 
