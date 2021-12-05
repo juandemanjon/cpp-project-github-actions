@@ -33,13 +33,13 @@ jobs:
         vcpkgGitCommitId: '63e935d967a3410e26bf4a708efa39d8384d2bbb'
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build --preset ${{matrix.preset}}
+      run: cmake -B ${{github.workspace}}\build --preset ${{matrix.preset}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{matrix.buildtype}}
+      run: cmake --build ${{github.workspace}}\build --config ${{matrix.buildtype}}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}\build
       run: ctest -C ${{matrix.buildtype}}
 
   # build:
